@@ -11,6 +11,8 @@ contract Voting is Ownable {
     using Counters for Counters.Counter;
     address public numberVote; 
     Counters.Counter private counter;
+
+    //mapping(address =>  mapping(uint256 => bool)) userVoteUp;
     struct Topic
     {
         uint startTimeVote;
@@ -26,21 +28,26 @@ contract Voting is Ownable {
         //topic.id = 0;
         counter.increment();
     }
-    // function View() public view returns(uint256){
-    //     return startTime;
-    // }
-    function voteAgree(uint256 Index, uint256 amount) public {
+    function viewTopic(uint256 Index) public view returns(Topic memory topic){
+        topic = topicArray[Index];
+    }
+
+    function voteAgree(uint256 Index, uint256 amount) external {
     Topic storage topic = topicArray[Index];
     require(topic.endTimeVote >= block.timestamp, "Topic da dong");
     require(IERC20(numberVote).balanceOf(msg.sender) >= amount, "Khong du tai san de vote");
   
-    IERC20(numberVote).safeTransferFrom(msg.sender, address(this), amount);    
+    IERC20(numberVote).safeTransferFrom(msg.sender, address(this), amount);   
+    //SuserVoteUp[msg.sender][Index] = true; 
   }
 
-  function voteDontAgree(uint256 Index, uint256 amount) public{
+  function voteDontAgree(uint256 Index, uint256 amount) external{
     Topic storage topic = topicArray[Index];
     require(topic.endTimeVote >= block.timestamp, "Topic da dong");
     require(IERC20(numberVote).balanceOf(msg.sender) >= amount, "Khong du tai san de vote");
     IERC20(numberVote).safeTransferFrom(msg.sender, address(this), amount);    
   }
+//   function totalOfTopic(uint256 index) {
+//     return totalOfVoteUp + totalOfVoteDown;
+// }
 }
